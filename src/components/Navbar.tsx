@@ -32,12 +32,10 @@ export function Navbar() {
           ))}
         </div>
 
-        <Button asChild className={navCtaClass}>
-          <Link href="/audit">
-            Start Free Audit
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
+        <Link href="/audit" className={navCtaClass}>
+          Start Free Audit
+          <ArrowRight className="size-4" />
+        </Link>
       </nav>
     </header>
   );

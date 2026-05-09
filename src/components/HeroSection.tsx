@@ -44,12 +44,10 @@ export function HeroSection() {
           className="mt-8 flex flex-col gap-3 sm:flex-row"
           variants={reveal}
         >
-          <Button asChild className={primaryCtaClass}>
-            <Link href="/audit">
-              Start Free Audit
-              <ArrowRight className="size-5" />
-            </Link>
-          </Button>
+          <Link href="/audit" className={primaryCtaClass}>
+                  Start Free Audit
+          <ArrowRight className="size-5" />
+      </Link>
           <Button
             className="h-12 cursor-pointer rounded-xl border-white/10 bg-transparent px-6 text-[0.95rem] font-medium tracking-[-0.01em] text-slate-300 transition-all duration-300 hover:scale-[1.01] hover:border-white/18 hover:bg-white/[0.035] hover:text-white"
             variant="outline"

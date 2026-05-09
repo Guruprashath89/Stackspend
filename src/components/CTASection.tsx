@@ -32,12 +32,10 @@ export function CTASection() {
               are ready to turn the report into savings.
             </p>
           </div>
-          <Button asChild className={primaryCtaClass}>
-            <Link href="/audit">
+          <Link href="/audit" className={primaryCtaClass}>
               Start Free Audit
-              <ArrowRight className="size-5" />
-            </Link>
-          </Button>
+           <ArrowRight className="size-5" />
+</Link>
         </div>
       </div>
     </motion.section>
