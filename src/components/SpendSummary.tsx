@@ -1,9 +1,12 @@
 "use client";
+import { generateAuditResults } from "@/lib/audit-engine";
 
 import { motion } from "framer-motion";
 import { Activity, CircleDollarSign, TrendingDown } from "lucide-react";
 
 import { auditTools, defaultConfig } from "@/components/audit-data";
+
+
 
 type SpendSummaryProps = {
   selectedTools: string[];
@@ -17,61 +20,25 @@ function parseSpend(value: string) {
 
 export function SpendSummary({ selectedTools, configs }: SpendSummaryProps) {
   const selected = auditTools.filter((tool) => selectedTools.includes(tool.id));
-  const monthlySpend = selected.reduce((total, tool) => {
-    const entered = parseSpend(configs[tool.id]?.spend ?? "");
-    return total + (entered || tool.defaultSpend);
-  }, 0);
 
- let wasteRate = 0.08;
-
-// Higher spend usually creates more inefficiency
-if (monthlySpend > 500) wasteRate += 0.04;
-if (monthlySpend > 1500) wasteRate += 0.05;
-if (monthlySpend > 5000) wasteRate += 0.07;
-
-// More tools = more overlap
-wasteRate += selected.length * 0.025;
-
-// Research tool overlap
-if (
-  selected.some((tool) => tool.id === "chatgpt") &&
-  selected.some((tool) => tool.id === "claude")
-) {
-  wasteRate += 0.04;
-}
-
-if (
-  selected.some((tool) => tool.id === "gemini") &&
-  selected.some((tool) => tool.id === "chatgpt")
-) {
-  wasteRate += 0.03;
-}
-
-// Prevent unrealistic numbers
-wasteRate = Math.min(wasteRate, 0.42);
-  const wastedSpend = Math.round(monthlySpend * wasteRate);
-  const recoveryRate =
-  monthlySpend > 3000 ? 0.68 :
-  monthlySpend > 1000 ? 0.61 :
-  0.52;
-
-const savings = Math.round(
-  wastedSpend * recoveryRate
+  const auditData = generateAuditResults(
+  selectedTools,
+  configs
 );
 
- const healthScore =
-  selected.length === 0
-    ? 0
-    : Math.max(
-        38,
-        Math.min(
-          96,
-          100 - Math.round(wasteRate * 100)
-        )
-      );
+ const healthWidth = auditData.hasValidSpend
+  ? `${auditData.healthScore}%`
+  : "0%";
 
-  const healthWidth = `${healthScore}%`;
-  const maxSpend = Math.max(...selected.map((tool) => parseSpend(configs[tool.id]?.spend ?? "") || tool.defaultSpend), 1);
+  const maxSpend = Math.max(
+  ...selected.map(
+    (tool) =>
+      parseSpend(
+        configs[tool.id]?.spend ?? ""
+      ) || tool.defaultSpend
+  ),
+  1
+);
 
   return (
     <aside className="lg:sticky lg:top-24">
@@ -101,7 +68,7 @@ const savings = Math.round(
               Monthly spend
             </p>
             <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-white">
-              ${monthlySpend.toLocaleString()}
+              ${auditData.monthlySpend.toLocaleString()}
             </p>
           </div>
           <div className="bg-[#0b1322] p-5">
@@ -109,7 +76,7 @@ const savings = Math.round(
               Projected savings
             </p>
             <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-emerald-200">
-              ${savings.toLocaleString()}
+              ${auditData.projectedSavings.toLocaleString()}
             </p>
           </div>
         </div>
@@ -120,7 +87,11 @@ const savings = Math.round(
               <p className="text-sm font-medium text-slate-300">
                 Spend Health Score
               </p>
-              <p className="text-sm font-semibold text-white">{healthScore}/100</p>
+             <p className="text-sm font-semibold text-white">
+          {auditData.hasValidSpend
+          ? `${auditData.healthScore}/100`
+          : "--"}
+</p>
             </div>
             <div className="h-2.5 overflow-hidden rounded-full bg-white/[0.07]">
               <div
@@ -136,7 +107,7 @@ const savings = Math.round(
               Estimated wasted spend
             </div>
             <p className="text-3xl font-semibold tracking-[-0.045em] text-white">
-              ${wastedSpend.toLocaleString()}
+              ${auditData.estimatedWaste.toLocaleString()}
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-500">
               Based on duplicate subscriptions, unused seats, and plan fit.
@@ -178,7 +149,7 @@ const savings = Math.round(
 
           <div className="flex items-center gap-2 rounded-2xl border border-emerald-300/15 bg-emerald-300/8 p-3 text-sm text-emerald-100">
             <CircleDollarSign className="size-4 shrink-0" />
-            Annualized opportunity: ${(savings * 12).toLocaleString()}
+            Annualized opportunity: ${(auditData.projectedSavings * 12).toLocaleString()}
           </div>
         </div>
       </motion.div>
