@@ -1,33 +1,153 @@
-import Link from "next/link";
+"use client";
+import ResultsNavbar from "@/components/results/ResultsNavbar";
+import HeroSummary from "@/components/results/HeroSummary";
+import MetricsGrid from "@/components/results/MetricsGrid";
+import SpendBreakdown from "@/components/results/SpendBreakdown";
+import Recommendations from "@/components/results/Recommendations";
+import AIInsights from "@/components/results/AIInsights";
+import HealthAnalysis from "@/components/results/HealthAnalysis";
+import ToolEfficiency from "@/components/results/ToolEfficiency";
+import SavingsTimeline from "@/components/results/SavingsTimeline";
+import ExecutiveSummary from "@/components/results/ExecutiveSummary";
+import ResultsCTA from "@/components/results/ResultsCTA";
+import { useEffect, useState } from "react";
 
-export default async function ResultsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
 
+
+
+export default function ResultsPage() {
+  
+  const [auditData, setAuditData] = useState<any>(null);
+  useEffect(() => {
+  const storedAudit = localStorage.getItem(
+    "stackspend-audit"
+  );
+
+  if (storedAudit) {
+    const parsed = JSON.parse(storedAudit);
+
+    const selectedTools =
+      parsed.selectedTools || [];
+
+    const configs = parsed.configs || {};
+
+    let monthlySpend = 0;
+
+    selectedTools.forEach((toolId: string) => {
+      const spend = Number(
+        configs[toolId]?.spend || 0
+      );
+
+      monthlySpend += spend;
+    });
+
+    let wasteRate = 0.08;
+
+    if (monthlySpend > 500) wasteRate += 0.04;
+    if (monthlySpend > 1500) wasteRate += 0.05;
+    if (monthlySpend > 5000) wasteRate += 0.07;
+
+    wasteRate += selectedTools.length * 0.025;
+
+    const estimatedWaste = Math.round(
+      monthlySpend * wasteRate
+    );
+
+    const projectedSavings = Math.round(
+      estimatedWaste * 0.61
+    );
+
+    const healthScore = Math.max(
+      38,
+      Math.min(
+        96,
+        100 - Math.round(wasteRate * 100)
+      )
+    );
+
+    setAuditData({
+      monthlySpend,
+      estimatedWaste,
+      projectedSavings,
+      annualOpportunity:
+        projectedSavings * 12,
+      healthScore,
+
+      tools: selectedTools.map(
+        (toolId: string) => ({
+          name: toolId,
+          spend: Number(
+            configs[toolId]?.spend || 0
+          ),
+          waste: Math.round(
+            Number(configs[toolId]?.spend || 0) *
+              wasteRate
+          ),
+          efficiency: healthScore,
+        })
+      ),
+
+      recommendations: [
+        {
+          title:
+            "Reduce inactive developer seats",
+          savings: 120,
+          difficulty: "Low",
+          priority: "High",
+        },
+        {
+          title:
+            "Consolidate overlapping AI assistants",
+          savings: 90,
+          difficulty: "Medium",
+          priority: "Medium",
+        },
+      ],
+
+      insights: [
+        "Potential overlap detected across AI research assistants.",
+        "High developer tooling allocation identified.",
+      ],
+    });
+  }
+}, []);
+if (!auditData) {
   return (
-    <main className="min-h-screen bg-[#050812] px-4 py-16 text-white sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-3xl rounded-[1.75rem] border border-white/10 bg-white/[0.035] p-8">
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-cyan-100">
-          Audit results
-        </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em]">
-          Results page placeholder
-        </h1>
-        <p className="mt-4 leading-7 text-slate-400">
-          Audit report <span className="text-slate-200">{id}</span> will render
-          here once report generation is connected.
-        </p>
-        <Link
-          className="mt-8 inline-flex h-11 items-center rounded-xl bg-white px-5 text-sm font-medium text-slate-950 transition hover:bg-cyan-100"
-          href="/audit"
-        >
-          Back to audit
-        </Link>
-      </section>
+    <main className="flex min-h-screen items-center justify-center bg-[#020817] text-white">
+      Loading audit results...
     </main>
   );
 }
 
+  return (
+    <main className="min-h-screen bg-[#020817] text-white">
+      <ResultsNavbar />
+
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:px-8">
+        <HeroSummary data={auditData} />
+
+        <MetricsGrid data={auditData} />
+
+        <div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
+          <SpendBreakdown data={auditData} />
+
+          <div className="flex flex-col gap-8">
+            <Recommendations data={auditData} />
+            <AIInsights data={auditData} />
+          </div>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          <HealthAnalysis data={auditData} />
+          <ToolEfficiency data={auditData} />
+        </div>
+
+        <SavingsTimeline data={auditData} />
+
+        <ExecutiveSummary data ={auditData} />
+
+        <ResultsCTA />
+      </div>
+    </main>
+  );
+}

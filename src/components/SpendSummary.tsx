@@ -21,10 +21,55 @@ export function SpendSummary({ selectedTools, configs }: SpendSummaryProps) {
     const entered = parseSpend(configs[tool.id]?.spend ?? "");
     return total + (entered || tool.defaultSpend);
   }, 0);
-  const wasteRate = selected.length > 3 ? 0.28 : selected.length > 1 ? 0.2 : 0.12;
+
+ let wasteRate = 0.08;
+
+// Higher spend usually creates more inefficiency
+if (monthlySpend > 500) wasteRate += 0.04;
+if (monthlySpend > 1500) wasteRate += 0.05;
+if (monthlySpend > 5000) wasteRate += 0.07;
+
+// More tools = more overlap
+wasteRate += selected.length * 0.025;
+
+// Research tool overlap
+if (
+  selected.some((tool) => tool.id === "chatgpt") &&
+  selected.some((tool) => tool.id === "claude")
+) {
+  wasteRate += 0.04;
+}
+
+if (
+  selected.some((tool) => tool.id === "gemini") &&
+  selected.some((tool) => tool.id === "chatgpt")
+) {
+  wasteRate += 0.03;
+}
+
+// Prevent unrealistic numbers
+wasteRate = Math.min(wasteRate, 0.42);
   const wastedSpend = Math.round(monthlySpend * wasteRate);
-  const savings = Math.round(wastedSpend * 0.72);
-  const healthScore = Math.max(42, Math.min(92, 88 - selected.length * 4 - Math.round(wasteRate * 28)));
+  const recoveryRate =
+  monthlySpend > 3000 ? 0.68 :
+  monthlySpend > 1000 ? 0.61 :
+  0.52;
+
+const savings = Math.round(
+  wastedSpend * recoveryRate
+);
+
+ const healthScore =
+  selected.length === 0
+    ? 0
+    : Math.max(
+        38,
+        Math.min(
+          96,
+          100 - Math.round(wasteRate * 100)
+        )
+      );
+
   const healthWidth = `${healthScore}%`;
   const maxSpend = Math.max(...selected.map((tool) => parseSpend(configs[tool.id]?.spend ?? "") || tool.defaultSpend), 1);
 

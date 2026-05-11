@@ -11,6 +11,7 @@ import { TeamInfoSection } from "@/components/TeamInfoSection";
 import { ToolForm } from "@/components/ToolForm";
 import { ToolSelection } from "@/components/ToolSelection";
 import { reveal, stagger } from "@/components/landing-motion";
+import { useRouter } from "next/navigation";
 
 type ToolConfig = typeof defaultConfig;
 type TeamInfo = {
@@ -27,6 +28,7 @@ export default function AuditPage() {
     company: "",
     role: "",
   });
+  const router = useRouter();
 
   const preparedPayload = useMemo(
     () => ({
@@ -68,10 +70,14 @@ export default function AuditPage() {
       [key]: value,
     }));
   }
+function handleGenerate() {
+  localStorage.setItem(
+    "stackspend-audit",
+    JSON.stringify(preparedPayload)
+  );
 
-  function handleGenerate() {
-    console.log("Prepared StackSpend audit payload", preparedPayload);
-  }
+  router.push("/results/generated");
+}
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050812] text-white">
