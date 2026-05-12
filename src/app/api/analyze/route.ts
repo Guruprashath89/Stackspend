@@ -1,71 +1,140 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY!
-);
+const client = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
+});
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const {
-      monthlySpend,
-      estimatedWaste,
-      projectedSavings,
-      healthScore,
-      tools,
-    } = body;
-
-    const toolsText = tools
-      .map(
-        (tool: any) =>
-          `${tool.name}: $${tool.spend}`
-      )
-      .join("\n");
-
-    const model =
-      genAI.getGenerativeModel({
-        model: "gemini-2.0-flash",
-      });
-
     const prompt = `
-You are a professional AI SaaS spend optimization analyst working for StackSpend.
+You are an enterprise AI spend optimization analyst.
 
-Analyze this company's AI tooling stack professionally.
+Analyze the following AI spend report professionally.
 
-Monthly Spend: $${monthlySpend}
-Estimated Waste: $${estimatedWaste}
-Projected Savings: $${projectedSavings}
-Health Score: ${healthScore}/100
+COMPANY AI SPEND DATA:
 
-Selected Tools:
-${toolsText}
+Monthly Spend:
+$${body.monthlySpend}
 
-Generate:
-1. Executive Summary
-2. Top Savings Opportunities
-3. Risk Analysis
-4. Optimization Advice
-5. Final Recommendation
+Estimated Monthly Waste:
+$${body.estimatedWaste}
 
-Keep the tone enterprise-grade, concise, and realistic.
+Projected Savings Opportunity:
+$${body.projectedSavings}
+
+Annual Savings Opportunity:
+$${body.annualOpportunity}
+
+Spend Health Score:
+${body.healthScore}/100
+
+Selected AI Tools:
+${body.tools
+  ?.map(
+    (tool: any) =>
+      `- ${tool.name}: $${tool.spend}/month`
+  )
+  .join("\n")}
+
+BUSINESS CONTEXT:
+
+- Higher health score means better spend efficiency
+- Multiple assistant tools may indicate overlap
+- Higher waste suggests redundant tooling or underutilized subscriptions
+- Savings opportunities should feel realistic and operationally practical
+
+Return ONLY valid JSON.
+
+Use this exact structure:
+
+{
+  "executiveSummary": "short executive summary",
+
+  "riskLevel": "Low",
+
+  "optimizationScore": 82,
+
+  "recommendations": [
+    {
+      "title": "recommendation title",
+      "description": "recommendation explanation",
+      "impact": "High"
+    }
+  ],
+
+  "insights": [
+    "insight 1",
+    "insight 2",
+    "insight 3"
+  ]
+}
+
+DO NOT return markdown.
+DO NOT return code blocks.
+ONLY return raw JSON.
 `;
 
-    const result =
-      await model.generateContent(
-        prompt
+    const response =
+      await client.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+
+        temperature: 0.5,
+      });
+
+    const raw =
+      response.choices[0].message.content;
+
+    console.log(
+      "RAW AI RESPONSE:",
+      raw
+    );
+
+    let parsedAnalysis;
+
+    try {
+      parsedAnalysis = JSON.parse(
+        raw || "{}"
+      );
+    } catch (parseError) {
+      console.error(
+        "JSON PARSE ERROR:",
+        parseError
       );
 
-    const response =
-      result.response.text();
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "AI returned invalid JSON",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      analysis: response,
+      analysis: parsedAnalysis,
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "AI ROUTE ERROR:",
+      error
+    );
 
     return NextResponse.json(
       {
@@ -73,7 +142,9 @@ Keep the tone enterprise-grade, concise, and realistic.
         error:
           "Failed to generate AI analysis",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
 }

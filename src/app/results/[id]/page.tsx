@@ -11,65 +11,42 @@ import SavingsTimeline from "@/components/results/SavingsTimeline";
 import ExecutiveSummary from "@/components/results/ExecutiveSummary";
 import ResultsCTA from "@/components/results/ResultsCTA";
 import { useEffect, useState } from "react";
-import { generateAuditResults } from "@/lib/audit-engine";
+
 
 
 
 
 export default function ResultsPage() {
   
-  const [auditData, setAuditData] = useState<any>(null);
+  const [auditData, setAuditData] =
+  useState<any>(null);
+
+const [aiAnalysis, setAiAnalysis] =
+  useState<any>(null);
+
 useEffect(() => {
-  const storedAudit =
+
+  const storedResults =
     localStorage.getItem(
-      "stackspend-audit"
+      "stackspend-results"
     );
 
-  if (storedAudit) {
+  if (storedResults) {
+
     const parsed =
-      JSON.parse(storedAudit);
-
-    const selectedTools =
-      parsed.selectedTools || [];
-
-    const configs =
-      parsed.configs || {};
-
-    const generatedResults =
-      generateAuditResults(
-        selectedTools,
-        configs
+      JSON.parse(
+        storedResults
       );
 
     setAuditData(
-      generatedResults
+      parsed.auditData
     );
 
-    // GEMINI API TEST
-    fetch("/api/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify(
-        generatedResults
-      ),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(
-          "GEMINI RESPONSE:",
-          data
-        );
-      })
-      .catch((error) => {
-        console.error(
-          "Gemini Error:",
-          error
-        );
-      });
+    setAiAnalysis(
+      parsed.aiAnalysis
+    );
   }
+
 }, []);
 
 if (!auditData) {
@@ -106,6 +83,133 @@ if (!auditData) {
         <SavingsTimeline data={auditData} />
 
         <ExecutiveSummary data ={auditData} />
+       <section className="rounded-3xl border border-white/10 bg-[#081225] p-8">
+
+  <div className="mb-8">
+    <h2 className="text-3xl font-semibold">
+      AI Optimization Analysis
+    </h2>
+
+    <p className="mt-2 text-slate-400">
+      AI-generated financial intelligence
+      based on your tooling ecosystem.
+    </p>
+  </div>
+
+  {aiAnalysis ? (
+
+    <div className="space-y-8">
+
+      {/* Executive Summary */}
+
+      <div>
+        <h3 className="text-xl font-semibold">
+          Executive Summary
+        </h3>
+
+        <p className="mt-3 leading-8 text-slate-300">
+          {aiAnalysis.executiveSummary}
+        </p>
+      </div>
+
+      {/* Risk + Score */}
+
+      <div className="grid gap-6 md:grid-cols-2">
+
+        <div className="rounded-2xl border border-white/10 bg-[#0b1728] p-5">
+
+          <p className="text-sm text-slate-400">
+            Risk Level
+          </p>
+
+          <h4 className="mt-2 text-3xl font-semibold">
+            {aiAnalysis.riskLevel}
+          </h4>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#0b1728] p-5">
+
+          <p className="text-sm text-slate-400">
+            Optimization Score
+          </p>
+
+          <h4 className="mt-2 text-3xl font-semibold">
+            {aiAnalysis.optimizationScore}/100
+          </h4>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+
+      <div>
+        <h3 className="text-xl font-semibold">
+          Recommendations
+        </h3>
+
+        <div className="mt-5 grid gap-5">
+
+          {aiAnalysis.recommendations?.map(
+            (item: any, index: number) => (
+
+              <div
+                key={index}
+                className="rounded-2xl border border-white/10 bg-[#0b1728] p-5"
+              >
+                <div className="flex items-center justify-between">
+
+                  <h4 className="text-lg font-semibold">
+                    {item.title}
+                  </h4>
+
+                  <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm text-cyan-200">
+                    {item.impact}
+                  </span>
+                </div>
+
+                <p className="mt-3 text-slate-400">
+                  {item.description}
+                </p>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* Insights */}
+
+      <div>
+        <h3 className="text-xl font-semibold">
+          Key Insights
+        </h3>
+
+        <ul className="mt-5 space-y-3">
+
+          {aiAnalysis.insights?.map(
+            (
+              insight: string,
+              index: number
+            ) => (
+
+              <li
+                key={index}
+                className="rounded-xl border border-white/10 bg-[#0b1728] px-5 py-4 text-slate-300"
+              >
+                {insight}
+              </li>
+            )
+          )}
+        </ul>
+      </div>
+    </div>
+
+  ) : (
+
+    <p className="text-slate-400">
+      No AI analysis available.
+    </p>
+
+  )}
+</section>
 
         <ResultsCTA />
       </div>

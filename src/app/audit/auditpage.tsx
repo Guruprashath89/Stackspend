@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { AuditCTA } from "@/components/AuditCTA";
 import { AuditNavbar } from "@/components/AuditNavbar";
@@ -12,6 +12,7 @@ import { ToolForm } from "@/components/ToolForm";
 import { ToolSelection } from "@/components/ToolSelection";
 import { reveal, stagger } from "@/components/landing-motion";
 import { useRouter } from "next/navigation";
+import { generateAuditResults } from "@/lib/audit-engine";
 
 type ToolConfig = typeof defaultConfig;
 type TeamInfo = {
@@ -21,6 +22,8 @@ type TeamInfo = {
 };
 
 export default function AuditPage() {
+  const [isGenerating, setIsGenerating] =
+  useState(false);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
   const [teamInfo, setTeamInfo] = useState<TeamInfo>({
@@ -30,15 +33,7 @@ export default function AuditPage() {
   });
   const router = useRouter();
 
-  const preparedPayload = useMemo(
-    () => ({
-      selectedTools,
-      configs,
-      teamInfo,
-      generatedAt: new Date().toISOString(),
-    }),
-    [configs, selectedTools, teamInfo],
-  );
+ 
 
   function handleToolToggle(id: string) {
     setSelectedTools((current) => {
@@ -70,13 +65,90 @@ export default function AuditPage() {
       [key]: value,
     }));
   }
-function handleGenerate() {
-  localStorage.setItem(
-    "stackspend-audit",
-    JSON.stringify(preparedPayload)
+
+
+async function handleGenerate() {
+  
+
+if (selectedTools.length === 0) {
+  alert(
+    "Select at least one AI tool."
   );
 
-  router.push("/results/generated");
+  return;
+}
+localStorage.removeItem(
+  "stackspend-results"
+);
+  setIsGenerating(true);
+
+  try {
+
+    // GENERATE CALCULATED RESULTS
+
+    const generatedResults =
+      generateAuditResults(
+        selectedTools,
+        configs
+      );
+
+    // CALL AI
+
+    const response =
+      await fetch(
+        "/api/analyze",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify(
+            generatedResults
+          ),
+        }
+      );
+
+    const aiData =
+      await response.json();
+
+      if (!aiData.success) {
+  throw new Error(
+    aiData.error || "AI analysis failed"
+  );
+}
+
+    // SAVE FINAL RESULTS
+
+    localStorage.setItem(
+      "stackspend-results",
+
+      JSON.stringify({
+        auditData:
+          generatedResults,
+
+        aiAnalysis:
+          aiData.analysis,
+      })
+    );
+
+    // NAVIGATE
+
+
+    router.push(
+      "/results/generated"
+    );
+
+  } catch (error) {
+    setIsGenerating(false);
+
+    console.error(
+      "Audit generation failed:",
+      error
+    );
+  }
 }
 
   return (
@@ -115,7 +187,10 @@ function handleGenerate() {
             selectedTools={selectedTools}
           />
           <TeamInfoSection onChange={handleTeamChange} teamInfo={teamInfo} />
-          <AuditCTA onGenerate={handleGenerate} />
+         <AuditCTA
+  onGenerate={handleGenerate}
+  isGenerating={isGenerating}
+/>
         </div>
 
         <SpendSummary configs={configs} selectedTools={selectedTools} />
