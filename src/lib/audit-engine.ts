@@ -25,7 +25,8 @@ const toolCategories: Record<string, string> = {
 
 export function generateAuditResults(
   selectedTools: string[],
-  configs: Record<string, any>
+  configs: Record<string, any>,
+  teamInfo: any
 ) {
   const selected = auditTools.filter(
     (tool) =>
@@ -334,5 +335,6 @@ export function generateAuditResults(
     recommendations,
 
     insights,
+    teamInfo
   };
 }

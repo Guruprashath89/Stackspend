@@ -41,6 +41,14 @@ ${body.tools
   .join("\n")}
 
 BUSINESS CONTEXT:
+Company Name:
+${body.teamInfo?.company || "Unknown"}
+
+Team Size:
+${body.teamInfo?.teamSize || "Unknown"}
+
+Role:
+${body.teamInfo?.role || "Unknown"}
 
 - Higher health score means better spend efficiency
 - Multiple assistant tools may indicate overlap
@@ -48,6 +56,7 @@ BUSINESS CONTEXT:
 - Savings opportunities should feel realistic and operationally practical
 
 Return ONLY valid JSON.
+
 
 Use this exact structure:
 

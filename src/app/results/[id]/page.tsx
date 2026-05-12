@@ -63,6 +63,46 @@ if (!auditData) {
 
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:px-8">
         <HeroSummary data={auditData} />
+        <div className="rounded-2xl border border-white/10 bg-[#081225] p-6">
+
+  <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">
+    Audit Context
+  </p>
+
+  <div className="mt-4 grid gap-4 md:grid-cols-3">
+
+    <div>
+      <p className="text-sm text-slate-400">
+        Company
+      </p>
+
+      <p className="mt-1 text-lg font-medium">
+        {auditData.teamInfo?.company || "Not Provided"}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-slate-400">
+        Team Size
+      </p>
+
+      <p className="mt-1 text-lg font-medium">
+        {auditData.teamInfo?.teamSize || "N/A"}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-slate-400">
+        Role
+      </p>
+
+      <p className="mt-1 text-lg font-medium">
+        {auditData.teamInfo?.role || "N/A"}
+      </p>
+    </div>
+
+  </div>
+</div>
 
         <MetricsGrid data={auditData} />
 

@@ -87,11 +87,11 @@ localStorage.removeItem(
     // GENERATE CALCULATED RESULTS
 
     const generatedResults =
-      generateAuditResults(
-        selectedTools,
-        configs
-      );
-
+  generateAuditResults(
+    selectedTools,
+    configs,
+    teamInfo
+  );
     // CALL AI
 
     const response =
