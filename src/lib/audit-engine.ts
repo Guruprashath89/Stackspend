@@ -1,125 +1,338 @@
 import { auditTools } from "@/components/audit-data";
 
 function parseSpend(value: string) {
-  const parsed = Number(value?.replace(/[^0-9.]/g, ""));
+  const parsed = Number(
+    value?.replace(/[^0-9.]/g, "")
+  );
 
-  return Number.isFinite(parsed) ? parsed : 0;
+  return Number.isFinite(parsed)
+    ? parsed
+    : 0;
 }
+
+const toolCategories: Record<string, string> = {
+  chatgpt: "assistant",
+  claude: "assistant",
+  gemini: "assistant",
+  grok: "assistant",
+
+  cursor: "developer",
+  copilot: "developer",
+
+  "openai-api": "api",
+  "anthropic-api": "api",
+};
 
 export function generateAuditResults(
   selectedTools: string[],
   configs: Record<string, any>
 ) {
-  const selected = auditTools.filter((tool) =>
-    selectedTools.includes(tool.id)
+  const selected = auditTools.filter(
+    (tool) =>
+      selectedTools.includes(tool.id)
   );
 
-  const monthlySpend = selected.reduce((total, tool) => {
-    const entered = parseSpend(
+  const tools = selected.map((tool) => {
+    const spend = parseSpend(
       configs[tool.id]?.spend ?? ""
     );
 
-    return total + entered;
-  }, 0);
+    return {
+      ...tool,
+      spend,
+      seats: Number(
+        configs[tool.id]?.seats || 1
+      ),
+      usage:
+        configs[tool.id]?.usage ||
+        "general",
+    };
+  });
 
-  const hasValidSpend = monthlySpend > 0;
+  const monthlySpend = tools.reduce(
+    (sum, tool) => sum + tool.spend,
+    0
+  );
 
-  let wasteRate = hasValidSpend ? 0.08 : 0;
+  const hasValidSpend =
+    monthlySpend > 0;
 
-  if (monthlySpend > 500) wasteRate += 0.04;
-  if (monthlySpend > 1500) wasteRate += 0.05;
-  if (monthlySpend > 5000) wasteRate += 0.07;
-
-  wasteRate += selected.length * 0.025;
-
-  if (
-    selected.some((tool) => tool.id === "chatgpt") &&
-    selected.some((tool) => tool.id === "claude")
-  ) {
-    wasteRate += 0.04;
+  if (!hasValidSpend) {
+    return {
+      monthlySpend: 0,
+      estimatedWaste: 0,
+      projectedSavings: 0,
+      annualOpportunity: 0,
+      healthScore: 0,
+      wasteRate: 0,
+      hasValidSpend: false,
+      tools: [],
+      recommendations: [],
+      insights: [],
+    };
   }
 
-  if (
-    selected.some((tool) => tool.id === "gemini") &&
-    selected.some((tool) => tool.id === "chatgpt")
-  ) {
+  let wasteRate = 0.06;
+
+  const insights: string[] = [];
+  const recommendations: any[] = [];
+
+  /*
+    -----------------------------------
+    SPEND SCALE ANALYSIS
+    -----------------------------------
+  */
+
+  if (monthlySpend > 500) {
     wasteRate += 0.03;
   }
 
-  wasteRate = Math.min(wasteRate, 0.42);
+  if (monthlySpend > 1500) {
+    wasteRate += 0.05;
 
-  const estimatedWaste = Math.round(
-    monthlySpend * wasteRate
-  );
+    insights.push(
+      "High recurring AI spend detected across the organization."
+    );
+  }
 
-  const recoveryRate =
-    monthlySpend > 3000
-      ? 0.68
-      : monthlySpend > 1000
-      ? 0.61
-      : 0.52;
+  if (monthlySpend > 5000) {
+    wasteRate += 0.07;
 
-  const projectedSavings = Math.round(
-    estimatedWaste * recoveryRate
-  );
+    insights.push(
+      "Enterprise-scale AI allocation may contain underutilized subscriptions."
+    );
+  }
 
-  const healthScore = !hasValidSpend
-    ? 0
-    : Math.max(
-        38,
-        Math.min(
-          96,
-          100 - Math.round(wasteRate * 100)
-        )
+  /*
+    -----------------------------------
+    TOOL SPRAWL ANALYSIS
+    -----------------------------------
+  */
+
+  if (tools.length >= 4) {
+    wasteRate += 0.05;
+
+    insights.push(
+      "Multiple overlapping AI tools detected across similar workflows."
+    );
+
+    recommendations.push({
+      title:
+        "Consolidate overlapping AI platforms",
+      savings: Math.round(
+        monthlySpend * 0.08
+      ),
+      difficulty: "Medium",
+      priority: "High",
+    });
+  }
+
+  /*
+    -----------------------------------
+    CATEGORY OVERLAP ANALYSIS
+    -----------------------------------
+  */
+
+  const categoriesUsed =
+    tools.map(
+      (tool) =>
+        toolCategories[tool.id]
+    );
+
+  const assistantCount =
+    categoriesUsed.filter(
+      (cat) => cat === "assistant"
+    ).length;
+
+  if (assistantCount >= 3) {
+    wasteRate += 0.06;
+
+    insights.push(
+      "Research and conversational assistant overlap detected."
+    );
+
+    recommendations.push({
+      title:
+        "Reduce assistant duplication",
+      savings: Math.round(
+        monthlySpend * 0.06
+      ),
+      difficulty: "Low",
+      priority: "High",
+    });
+  }
+
+  /*
+    -----------------------------------
+    DEVELOPER TOOL ANALYSIS
+    -----------------------------------
+  */
+
+  const developerTools =
+    tools.filter(
+      (tool) =>
+        toolCategories[tool.id] ===
+        "developer"
+    );
+
+  developerTools.forEach((tool) => {
+    const spendPerSeat =
+      tool.spend / tool.seats;
+
+    if (spendPerSeat > 60) {
+      wasteRate += 0.03;
+
+      insights.push(
+        `${tool.name} allocation appears elevated relative to active developer usage.`
       );
+
+      recommendations.push({
+        title:
+          `Optimize ${tool.name} seat allocation`,
+        savings: Math.round(
+          tool.spend * 0.12
+        ),
+        difficulty: "Low",
+        priority: "Medium",
+      });
+    }
+  });
+
+  /*
+    -----------------------------------
+    API + CHAT OVERLAP
+    -----------------------------------
+  */
+
+  const hasAPI =
+    selectedTools.includes(
+      "openai-api"
+    ) ||
+    selectedTools.includes(
+      "anthropic-api"
+    );
+
+  const hasChatAssistants =
+    assistantCount >= 2;
+
+  if (hasAPI && hasChatAssistants) {
+    wasteRate += 0.04;
+
+    insights.push(
+      "Parallel API and subscription workflows may contain duplicated operational usage."
+    );
+  }
+
+  /*
+    -----------------------------------
+    LIMIT WASTE RATE
+    -----------------------------------
+  */
+
+  wasteRate = Math.min(
+    wasteRate,
+    0.42
+  );
+
+  const estimatedWaste =
+    Math.round(
+      monthlySpend * wasteRate
+    );
+
+  const projectedSavings =
+    Math.round(
+      estimatedWaste * 0.58
+    );
+
+  const healthScore =
+    Math.max(
+      42,
+      Math.min(
+        96,
+        100 -
+          Math.round(
+            wasteRate * 100
+          )
+      )
+    );
+
+  /*
+    -----------------------------------
+    TOOL EFFICIENCY
+    -----------------------------------
+  */
+
+  const processedTools =
+    tools.map((tool) => {
+      let efficiency =
+        healthScore;
+
+      if (
+        toolCategories[tool.id] ===
+        "assistant"
+      ) {
+        efficiency -= 2;
+      }
+
+      if (
+        toolCategories[tool.id] ===
+        "developer"
+      ) {
+        efficiency -= 5;
+      }
+
+      efficiency = Math.max(
+        45,
+        Math.min(96, efficiency)
+      );
+
+      return {
+        id: tool.id,
+        name: tool.name,
+        spend: tool.spend,
+
+        waste: Math.round(
+          tool.spend * wasteRate
+        ),
+
+        efficiency,
+      };
+    });
+
+  /*
+    -----------------------------------
+    FALLBACK RECOMMENDATIONS
+    -----------------------------------
+  */
+
+  if (
+    recommendations.length === 0
+  ) {
+    recommendations.push({
+      title:
+        "Review AI plan allocation",
+      savings: Math.round(
+        projectedSavings * 0.4
+      ),
+      difficulty: "Low",
+      priority: "Medium",
+    });
+  }
 
   return {
     monthlySpend,
     estimatedWaste,
     projectedSavings,
-    annualOpportunity: projectedSavings * 12,
+    annualOpportunity:
+      projectedSavings * 12,
     healthScore,
     wasteRate,
     hasValidSpend,
 
-    tools: selected.map((tool) => ({
-      id: tool.id,
-      name: tool.name,
-      spend: parseSpend(
-        configs[tool.id]?.spend ?? ""
-      ),
-      efficiency: healthScore,
-      waste: Math.round(
-        parseSpend(configs[tool.id]?.spend ?? "") *
-          wasteRate
-      ),
-    })),
+    tools: processedTools,
 
-    recommendations: [
-      {
-        title:
-          "Reduce inactive developer seats",
-        savings: Math.round(
-          projectedSavings * 0.4
-        ),
-        difficulty: "Low",
-        priority: "High",
-      },
+    recommendations,
 
-      {
-        title:
-          "Consolidate overlapping AI assistants",
-        savings: Math.round(
-          projectedSavings * 0.25
-        ),
-        difficulty: "Medium",
-        priority: "Medium",
-      },
-    ],
-
-    insights: [
-      "Potential overlap detected across AI assistants.",
-      "Optimization opportunities found in plan allocation.",
-    ],
+    insights,
   };
 }
