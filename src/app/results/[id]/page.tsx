@@ -19,7 +19,7 @@ import { generateAuditResults } from "@/lib/audit-engine";
 export default function ResultsPage() {
   
   const [auditData, setAuditData] = useState<any>(null);
- useEffect(() => {
+useEffect(() => {
   const storedAudit =
     localStorage.getItem(
       "stackspend-audit"
@@ -44,6 +44,31 @@ export default function ResultsPage() {
     setAuditData(
       generatedResults
     );
+
+    // GEMINI API TEST
+    fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify(
+        generatedResults
+      ),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(
+          "GEMINI RESPONSE:",
+          data
+        );
+      })
+      .catch((error) => {
+        console.error(
+          "Gemini Error:",
+          error
+        );
+      });
   }
 }, []);
 
