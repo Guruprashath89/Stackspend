@@ -13,6 +13,7 @@ import { ToolSelection } from "@/components/ToolSelection";
 import { reveal, stagger } from "@/components/landing-motion";
 import { useRouter } from "next/navigation";
 import { generateAuditResults } from "@/lib/audit-engine";
+import AuditGeneratingOverlay from "@/components/AuditGeneratingOverlay";
 
 type ToolConfig = typeof defaultConfig;
 type TeamInfo = {
@@ -153,6 +154,9 @@ localStorage.removeItem(
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050812] text-white">
+      {isGenerating && (
+  <AuditGeneratingOverlay />
+)}
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_22%_10%,rgba(64,184,255,0.12),transparent_28%),radial-gradient(circle_at_84%_4%,rgba(138,92,246,0.13),transparent_30%),linear-gradient(180deg,#050812_0%,#08111f_48%,#050812_100%)]" />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,0.032)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.032)_1px,transparent_1px)] bg-[size:72px_72px] opacity-35" />
       <div className="noise-texture pointer-events-none fixed inset-0 -z-10 opacity-[0.055]" />
