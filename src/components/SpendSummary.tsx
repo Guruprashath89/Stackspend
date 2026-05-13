@@ -10,7 +10,17 @@ import { auditTools, defaultConfig } from "@/components/audit-data";
 
 type SpendSummaryProps = {
   selectedTools: string[];
-  configs: Record<string, typeof defaultConfig>;
+
+  configs: Record<
+    string,
+    typeof defaultConfig
+  >;
+
+  teamInfo: {
+    teamSize: string;
+    company: string;
+    role: string;
+  };
 };
 
 function parseSpend(value: string) {
@@ -18,12 +28,17 @@ function parseSpend(value: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export function SpendSummary({ selectedTools, configs }: SpendSummaryProps) {
+export function SpendSummary({
+  selectedTools,
+  configs,
+  teamInfo,
+}: SpendSummaryProps) {
   const selected = auditTools.filter((tool) => selectedTools.includes(tool.id));
 
   const auditData = generateAuditResults(
   selectedTools,
-  configs
+  configs,
+  teamInfo
 );
 
  const healthWidth = auditData.hasValidSpend

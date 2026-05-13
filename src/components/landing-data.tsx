@@ -16,7 +16,6 @@ export const navItems = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "Savings", href: "#savings" },
-  { label: "GitHub", href: "#github" },
 ];
 
 export const supportedTools = [

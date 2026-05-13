@@ -48,13 +48,7 @@ export function HeroSection() {
                   Start Free Audit
           <ArrowRight className="size-5" />
       </Link>
-          <Button
-            className="h-12 cursor-pointer rounded-xl border-white/10 bg-transparent px-6 text-[0.95rem] font-medium tracking-[-0.01em] text-slate-300 transition-all duration-300 hover:scale-[1.01] hover:border-white/18 hover:bg-white/[0.035] hover:text-white"
-            variant="outline"
-          >
-            View Sample Report
-            <FileChartColumn className="size-5" />
-          </Button>
+         
         </motion.div>
         <motion.div
           className="mt-8 flex flex-wrap items-center gap-2 text-sm tracking-[-0.01em] text-slate-500"

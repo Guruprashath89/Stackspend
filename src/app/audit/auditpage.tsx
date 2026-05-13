@@ -197,7 +197,11 @@ localStorage.removeItem(
 />
         </div>
 
-        <SpendSummary configs={configs} selectedTools={selectedTools} />
+        <SpendSummary
+  configs={configs}
+  selectedTools={selectedTools}
+  teamInfo={teamInfo}
+/>
       </section>
     </main>
   );
