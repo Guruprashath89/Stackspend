@@ -1,4 +1,4 @@
-import { auditTools } from "@/components/audit-data";
+import { auditTools } from "../components/audit-data";
 
 function parseSpend(value: string) {
   const parsed = Number(
