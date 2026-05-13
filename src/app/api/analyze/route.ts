@@ -1,8 +1,11 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
+const apiKey =
+  process.env.GROQ_API_KEY || "development-fallback-key";
+
 const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
