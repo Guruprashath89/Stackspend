@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import FinancialRisks from "@/components/results/FinancialRisks";
 import IndustryBenchmark from "@/components/results/IndustryBenchmark";
 import ImmediateActionPlan from "@/components/results/ImmediateActionPlan";
+import ReportHeader from "@/components/results/ReportHeader";
 
 
 
@@ -65,7 +66,9 @@ if (!auditData) {
       <ResultsNavbar />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:px-8">
-        <HeroSummary data={auditData} />
+        <ReportHeader data={auditData} />
+
+           <HeroSummary data={auditData} />
         <div className="rounded-2xl border border-white/10 bg-[#081225] p-6">
 
   <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">

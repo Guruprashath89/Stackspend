@@ -390,6 +390,23 @@ if (monthlySpend < benchmarkLow) {
     "Below Benchmark";
 }
 
+const auditId =
+  `SP-${Math.floor(
+    10000 + Math.random() * 90000
+  )}`;
+
+const generatedAt =
+  new Date().toLocaleString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }
+  );
+
   return {
     financialRisks: [
   ...(selected.some(
@@ -432,6 +449,8 @@ industryBenchmark: {
   high: benchmarkHigh,
   status: benchmarkStatus,
 },
+auditId,
+generatedAt,
     actionPlan,
     monthlySpend,
     estimatedWaste,
