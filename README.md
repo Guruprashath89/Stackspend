@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StackSpend
 
-## Getting Started
+StackSpend is an AI spend auditing platform designed for startups, agencies, and engineering teams to analyze AI tool subscriptions, detect overspending, and generate optimization recommendations instantly.
 
-First, run the development server:
+The platform helps teams identify redundant AI subscriptions, underutilized plans, overlapping tooling, and potential monthly + annual savings using a deterministic audit engine combined with AI-generated operational insights.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- AI tool spend audit
+- Monthly + annual savings analysis
+- AI-generated optimization insights
+- Industry benchmark comparison
+- Financial risk analysis
+- Executive-style PDF export
+- Shareable audit reports
+- Responsive dashboard UI
+- Persistent audit state
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 16
+- TypeScript
+- Tailwind CSS
+- Groq API
+- jsPDF
+- Framer Motion
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Product Overview
 
-## Deploy on Vercel
+StackSpend was designed as a lightweight SaaS-style AI cost optimization platform.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The goal was to simulate how modern startups manage growing AI subscription costs across tools such as:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ChatGPT
+- Claude
+- Cursor
+- Gemini
+- OpenAI API
+- Anthropic API
+
+The system generates:
+- financial summaries
+- optimization opportunities
+- benchmark analysis
+- AI-generated operational recommendations
+
+---
+
+## Screenshots
+
+### Landing Page
+
+![Landing Page](./public/screenshots/landing.png)
+
+### Audit Flow
+
+![Audit Flow](./public/screenshots/audit.png)
+
+### Results Dashboard
+
+![Results Dashboard](./public/screenshots/results.png)
+
+## Local Setup
+
+Install dependencies:
+npm install
+
+Architecture Decisions
+Deterministic Financial Logic
+
+Financial calculations were intentionally implemented using deterministic logic instead of AI-generated calculations.
+
+This ensures:
+
+predictable outputs
+explainable calculations
+stable recommendations
+lower hallucination risk
+AI Used for Narrative Analysis
+
+LLMs were used only for:
+
+executive summaries
+operational insights
+recommendation wording
+
+This separation improves reliability while still leveraging AI for natural-language reporting.
+
+Next.js Fullstack Architecture
+
+Next.js was chosen because it allows:
+
+frontend rendering
+API routes
+server-side execution
+
+inside a single deployment architecture.
+
+Local Persistence During MVP Stage
+
+Audit state currently uses localStorage to simplify MVP iteration speed and reduce backend complexity during the prototype stage.
+
+Executive-Style UX
+
+The interface was intentionally designed to resemble modern SaaS reporting tools instead of a traditional CRUD admin dashboard.
+
+The focus was:
+
+clarity
+perceived professionalism
+report shareability
+executive readability
+Deployment
+
+Deployed using Vercel.
+
+Future Improvements
+Database-backed report persistence
+Authentication system
+Team collaboration
+Real billing integrations
+Advanced analytics
+Scheduled reporting
+Email delivery workflows
+Author
+
+Guru Prashath
