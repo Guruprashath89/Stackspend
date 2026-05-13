@@ -9,6 +9,8 @@ function parseSpend(value: string) {
     ? parsed
     : 0;
 }
+const recommendations: any[] = [];
+
 
 const toolCategories: Record<string, string> = {
   chatgpt: "assistant",
@@ -77,6 +79,7 @@ export function generateAuditResults(
 
   const insights: string[] = [];
   const recommendations: any[] = [];
+  const actionPlan: any[] = [];
 
   /*
     -----------------------------------
@@ -163,6 +166,20 @@ export function generateAuditResults(
     });
   }
 
+  actionPlan.push({
+  title:
+    "Consolidate overlapping AI workflows",
+
+  impact:
+    "Reduce duplicated assistant usage across teams.",
+
+  savings: Math.round(
+    monthlySpend * 0.08
+  ),
+});
+
+
+
   /*
     -----------------------------------
     DEVELOPER TOOL ANALYSIS
@@ -197,8 +214,21 @@ export function generateAuditResults(
         priority: "Medium",
       });
     }
+    actionPlan.push({
+  title:
+    `Review ${tool.name} seat utilization`,
+
+  impact:
+    "Potential inactive or underutilized developer licenses detected.",
+
+  savings: Math.round(
+    tool.spend * 0.12
+  ),
+});
+
   });
 
+  
   /*
     -----------------------------------
     API + CHAT OVERLAP
@@ -402,7 +432,7 @@ industryBenchmark: {
   high: benchmarkHigh,
   status: benchmarkStatus,
 },
-
+    actionPlan,
     monthlySpend,
     estimatedWaste,
     projectedSavings,

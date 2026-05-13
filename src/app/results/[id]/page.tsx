@@ -13,6 +13,7 @@ import ResultsCTA from "@/components/results/ResultsCTA";
 import { useEffect, useState } from "react";
 import FinancialRisks from "@/components/results/FinancialRisks";
 import IndustryBenchmark from "@/components/results/IndustryBenchmark";
+import ImmediateActionPlan from "@/components/results/ImmediateActionPlan";
 
 
 
@@ -109,6 +110,7 @@ if (!auditData) {
         <MetricsGrid data={auditData} />
         <FinancialRisks data={auditData} />
         <IndustryBenchmark data={auditData} />
+        <ImmediateActionPlan data={auditData} />
 
         <div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
           <SpendBreakdown data={auditData} />
