@@ -1,6 +1,13 @@
 import Link from "next/link";
 
-export default function ResultsCTA() {
+type ResultsCTAProps = {
+  onExportPDF: () => void;
+};
+
+export default function ResultsCTA({
+  onExportPDF,
+}: ResultsCTAProps) 
+ {
   return (
     <section className="rounded-3xl border border-white/10 bg-[#081225] p-8">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
@@ -21,13 +28,14 @@ export default function ResultsCTA() {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <button className="rounded-xl border border-white/10 px-6 py-3 text-sm font-medium transition-all duration-300 hover:border-cyan-400/40 hover:bg-white/[0.03]">
-            Export PDF
-          </button>
+            <button
+      onClick={onExportPDF}
+      className="rounded-xl border border-white/10 px-6 py-3 text-sm font-medium transition-all duration-300 hover:border-cyan-400/40 hover:bg-white/[0.03]"
+    >
+      Export PDF
+    </button>
 
-          <button className="rounded-xl border border-white/10 px-6 py-3 text-sm font-medium transition-all duration-300 hover:border-cyan-400/40 hover:bg-white/[0.03]">
-            Share Report
-          </button>
+          
 
           <Link
             href="/audit"
