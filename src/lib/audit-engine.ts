@@ -320,7 +320,89 @@ export function generateAuditResults(
     });
   }
 
+  let benchmarkLow = 0;
+let benchmarkHigh = 0;
+
+const teamSize = Number(
+  teamInfo?.teamSize || 0
+);
+
+if (teamSize <= 5) {
+  benchmarkLow = 50;
+  benchmarkHigh = 120;
+}
+
+else if (teamSize <= 20) {
+  benchmarkLow = 120;
+  benchmarkHigh = 400;
+}
+
+else if (teamSize <= 50) {
+  benchmarkLow = 400;
+  benchmarkHigh = 1200;
+}
+
+else {
+  benchmarkLow = 1200;
+  benchmarkHigh = 5000;
+}
+
+let benchmarkStatus =
+  "Within Benchmark";
+
+if (monthlySpend > benchmarkHigh) {
+  benchmarkStatus =
+    "Above Benchmark";
+}
+
+if (monthlySpend < benchmarkLow) {
+  benchmarkStatus =
+    "Below Benchmark";
+}
+
   return {
+    financialRisks: [
+  ...(selected.some(
+    (tool) =>
+      tool.id === "chatgpt"
+  ) &&
+  selected.some(
+    (tool) =>
+      tool.id === "claude"
+  )
+    ? [
+        "Overlapping AI assistant subscriptions may be increasing operational redundancy.",
+      ]
+    : []),
+
+  ...(selected.some(
+    (tool) =>
+      tool.id === "cursor"
+  )
+    ? [
+        "Premium developer tooling allocation may contain inactive or underutilized seats.",
+      ]
+    : []),
+
+  ...(monthlySpend > 500
+    ? [
+        "Current AI spend exceeds recommended efficiency threshold for teams of similar size.",
+      ]
+    : []),
+
+  ...(selected.length >= 4
+    ? [
+        "Large AI tooling stacks can introduce workflow fragmentation and duplicated functionality.",
+      ]
+    : []),
+],
+
+industryBenchmark: {
+  low: benchmarkLow,
+  high: benchmarkHigh,
+  status: benchmarkStatus,
+},
+
     monthlySpend,
     estimatedWaste,
     projectedSavings,
