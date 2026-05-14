@@ -807,16 +807,18 @@ aiAnalysis?.insights?.forEach(
         <ExecutiveSummary data ={auditData} />
        <section className="rounded-3xl border border-white/10 bg-[#081225] p-8">
 
-  <div className="mb-8">
-    <h2 className="text-3xl font-semibold">
-      AI Optimization Analysis
-    </h2>
+ <div className="mb-6 sm:mb-8">
 
-    <p className="mt-2 text-slate-400">
-      AI-generated financial intelligence
-      based on your tooling ecosystem.
-    </p>
-  </div>
+  <h2 className="text-2xl sm:text-3xl font-semibold">
+    AI Optimization Analysis
+  </h2>
+
+  <p className="mt-2 text-sm sm:text-base text-slate-400">
+    AI-generated financial intelligence
+    based on your tooling ecosystem.
+  </p>
+
+</div>
 
   {aiAnalysis ? (
 
@@ -864,64 +866,141 @@ aiAnalysis?.insights?.forEach(
       {/* Recommendations */}
 
       <div>
-        <h3 className="text-xl font-semibold">
-          Recommendations
-        </h3>
 
-        <div className="mt-5 grid gap-5">
+  <h3 className="text-lg sm:text-xl font-semibold">
+    Recommendations
+  </h3>
 
-          {aiAnalysis.recommendations?.map(
-            (item: any, index: number) => (
+  <div className="mt-4 sm:mt-5 grid gap-4 sm:gap-5">
 
-              <div
-                key={index}
-                className="rounded-2xl border border-white/10 bg-[#0b1728] p-5"
-              >
-                <div className="flex items-center justify-between">
+    {aiAnalysis.recommendations?.map(
+      (item: any, index: number) => (
 
-                  <h4 className="text-lg font-semibold">
-                    {item.title}
-                  </h4>
+        <div
+          key={index}
+          className="
+          rounded-2xl
+          border
+          border-white/10
+          bg-[#0b1728]
 
-                  <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm text-cyan-200">
-                    {item.impact}
-                  </span>
-                </div>
+          p-4
+          sm:p-5
+          "
+        >
 
-                <p className="mt-3 text-slate-400">
-                  {item.description}
-                </p>
-              </div>
-            )
-          )}
+          <div className="
+            flex
+            flex-col
+            gap-3
+
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+          ">
+
+            <h4 className="text-base sm:text-lg font-semibold leading-6">
+              {item.title}
+            </h4>
+
+            <span className="
+              self-start
+              rounded-full
+              bg-cyan-500/10
+              px-3
+              py-1
+
+              text-xs
+              sm:text-sm
+
+              text-cyan-200
+            ">
+              {item.impact}
+            </span>
+
+          </div>
+
+          <p className="
+            mt-3
+            text-sm
+            sm:text-base
+            leading-6
+            text-slate-400
+          ">
+            {item.description}
+          </p>
+
         </div>
-      </div>
+      )
+    )}
 
-      {/* Insights */}
+  </div>
 
-      <div>
-        <h3 className="text-xl font-semibold">
-          Key Insights
-        </h3>
+</div>
 
-        <ul className="mt-5 space-y-3">
 
-          {aiAnalysis.insights?.map(
-            (
-              insight: string,
-              index: number
-            ) => (
+{/* Insights */}
 
-              <li
-                key={index}
-                className="rounded-xl border border-white/10 bg-[#0b1728] px-5 py-4 text-slate-300"
-              >
-                {insight}
-              </li>
-            )
-          )}
-        </ul>
-      </div>
+<div>
+
+  <h3 className="text-lg sm:text-xl font-semibold">
+    Key Insights
+  </h3>
+
+  <ul className="mt-4 sm:mt-5 space-y-3">
+
+    {aiAnalysis.insights?.map(
+      (
+        insight: string,
+        index: number
+      ) => (
+
+        <li
+          key={index}
+          className="
+          rounded-xl
+          border
+          border-white/10
+          bg-[#0b1728]
+
+          px-4
+          py-3
+
+          sm:px-5
+          sm:py-4
+          "
+        >
+
+          <div className="flex items-start gap-3">
+
+            <div className="
+            mt-1.5
+            h-2
+            w-2
+            shrink-0
+            rounded-full
+            bg-cyan-300
+            " />
+
+            <p className="
+              text-sm
+              sm:text-base
+              leading-6
+              text-slate-300
+            ">
+              {insight}
+            </p>
+
+          </div>
+
+        </li>
+
+      )
+    )}
+
+  </ul>
+
+</div>
     </div>
 
   ) : (

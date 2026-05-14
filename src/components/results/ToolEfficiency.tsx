@@ -19,35 +19,39 @@ export default function ToolEfficiency({ data }: any) {
     )[0];
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-[#081225] p-8">
+    <section className="rounded-3xl border border-white/10 bg-[#081225] p-5 sm:p-8">
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold">
+      <div className="mb-6 sm:mb-8">
+
+        <h2 className="text-xl sm:text-2xl font-semibold">
           Tool Efficiency Breakdown
         </h2>
 
-        <p className="mt-2 text-slate-400">
-          Identify the strongest performing tools and the biggest optimization opportunities.
+        <p className="mt-2 text-sm sm:text-base text-slate-400">
+          Identify the strongest performing tools and optimization opportunities.
         </p>
+
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
 
-        {/* Most Efficient Tool */}
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
+        {/* MOST EFFICIENT */}
 
-          <p className="text-sm uppercase tracking-[0.2em] text-emerald-300">
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-6">
+
+          <p className="text-xs sm:text-sm uppercase tracking-[0.2em] text-emerald-300">
             Most Efficient
           </p>
 
-          <h3 className="mt-4 text-3xl font-semibold">
+          <h3 className="mt-3 text-2xl sm:text-3xl font-semibold">
             {mostEfficient.name}
           </h3>
 
-          <div className="mt-6">
+          <div className="mt-5">
 
-            <div className="mb-2 flex items-center justify-between text-sm">
+            <div className="mb-2 flex items-center justify-between text-xs sm:text-sm">
+
               <span className="text-slate-400">
                 Efficiency Score
               </span>
@@ -55,135 +59,144 @@ export default function ToolEfficiency({ data }: any) {
               <span className="text-emerald-300">
                 {mostEfficient.efficiency}/100
               </span>
+
             </div>
 
-            <div className="h-3 overflow-hidden rounded-full bg-white/10">
+            <div className="h-2 sm:h-3 overflow-hidden rounded-full bg-white/10">
 
               <div
                 className="h-full rounded-full bg-emerald-300"
                 style={{
-                  width: `${mostEfficient.efficiency}%`,
+                  width:`${mostEfficient.efficiency}%`
                 }}
               />
+
             </div>
+
           </div>
 
-          <p className="mt-5 text-sm leading-relaxed text-slate-400">
-            Strong utilization efficiency with minimal overlap and consistent active usage.
+          <p className="mt-4 text-xs sm:text-sm leading-6 text-slate-400">
+            Strong utilization efficiency with minimal overlap and active usage.
           </p>
+
         </div>
 
-        {/* Highest Waste Tool */}
-{
-  tools.length > 1 ? (
 
-    <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6">
+        {/* HIGHEST WASTE */}
 
-      <p className="text-sm uppercase tracking-[0.2em] text-red-300">
-        Highest Waste
-      </p>
+        {tools.length > 1 ? (
 
-      <h3 className="mt-4 text-3xl font-semibold">
-        {highestWaste.name}
-      </h3>
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 sm:p-6">
 
-      <div className="mt-6">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.2em] text-red-300">
+              Highest Waste
+            </p>
 
-        <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="text-slate-400">
-            Estimated Waste
-          </span>
+            <h3 className="mt-3 text-2xl sm:text-3xl font-semibold">
+              {highestWaste.name}
+            </h3>
 
-          <span className="text-red-300">
-            ${highestWaste.waste}
-          </span>
-        </div>
+            <div className="mt-5">
 
-        <div className="h-3 overflow-hidden rounded-full bg-white/10">
+              <div className="mb-2 flex items-center justify-between text-xs sm:text-sm">
 
-          <div
-            className="h-full rounded-full bg-red-300"
-            style={{
-              width: `${Math.min(
-                highestWaste.waste,
-                100
-              )}%`,
-            }}
-          />
-        </div>
+                <span className="text-slate-400">
+                  Estimated Waste
+                </span>
+
+                <span className="text-red-300">
+                  ${highestWaste.waste}
+                </span>
+
+              </div>
+
+              <div className="h-2 sm:h-3 overflow-hidden rounded-full bg-white/10">
+
+                <div
+                  className="h-full rounded-full bg-red-300"
+                  style={{
+                    width:`${Math.min(
+                      highestWaste.waste,
+                      100
+                    )}%`
+                  }}
+                />
+
+              </div>
+
+            </div>
+
+            <p className="mt-4 text-xs sm:text-sm leading-6 text-slate-400">
+              Elevated waste levels from overlap or underutilized plans.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 sm:p-6">
+
+            <p className="text-xs sm:text-sm uppercase tracking-[0.2em] text-cyan-300">
+              Optimization Insight
+            </p>
+
+            <h3 className="mt-3 text-2xl sm:text-3xl font-semibold">
+              Healthy AI Allocation
+            </h3>
+
+            <p className="mt-5 text-xs sm:text-sm leading-6 text-slate-400">
+              Current stack is focused around a primary workflow.
+            </p>
+
+          </div>
+
+        )}
+
       </div>
 
-      <p className="mt-5 text-sm leading-relaxed text-slate-400">
-        Elevated waste levels detected from overlapping usage or underutilized premium allocation.
-      </p>
-    </div>
 
-  ) : (
+      {/* OPPORTUNITY */}
 
-    <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
-
-      <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">
-        Optimization Insight
-      </p>
-
-      <h3 className="mt-4 text-3xl font-semibold">
-        Healthy AI Allocation
-      </h3>
-
-      <p className="mt-6 text-sm leading-relaxed text-slate-400">
-        Your current stack is focused around a single primary AI workflow. Additional savings opportunities usually emerge when multiple overlapping tools are introduced.
-      </p>
-
-      <div className="mt-8 rounded-xl border border-cyan-400/10 bg-[#081225] p-4">
-
-        <p className="text-sm text-slate-400">
-          Current Waste Exposure
-        </p>
-
-        <p className="mt-2 text-2xl font-semibold text-cyan-200">
-          Low
-        </p>
-      </div>
-    </div>
-  )
-}
-</div>
-      {/* Optimization Opportunity */}
-
-      <div className="mt-8 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
+      <div className="mt-6 sm:mt-8 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 sm:p-6">
 
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">
-              Best Optimization Opportunity
+
+            <p className="text-xs sm:text-sm uppercase tracking-[0.2em] text-cyan-300">
+              Best Opportunity
             </p>
 
-            <h3 className="mt-3 text-2xl font-semibold">
+            <h3 className="mt-2 text-xl sm:text-2xl font-semibold">
               {data.recommendations?.[0]?.title}
             </h3>
 
-            <p className="mt-3 max-w-2xl text-slate-400">
-              Optimization analysis detected consolidation and efficiency improvement opportunities based on your current AI stack allocation.
+            <p className="mt-2 text-sm text-slate-400">
+              Optimization opportunities detected from your AI stack allocation.
             </p>
+
           </div>
 
-          <div className="rounded-2xl border border-cyan-400/20 bg-[#081225] px-6 py-5 text-center">
+          <div className="rounded-2xl border border-cyan-400/20 bg-[#081225] p-4 sm:px-6 sm:py-5 text-center w-full lg:w-auto">
 
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               Potential Savings
             </p>
 
-            <h4 className="mt-2 text-4xl font-bold text-cyan-200">
+            <h4 className="mt-1 text-3xl sm:text-4xl font-bold text-cyan-200">
               ${data.recommendations?.[0]?.savings}
             </h4>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-500">
               per month
             </p>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
   );
 }
